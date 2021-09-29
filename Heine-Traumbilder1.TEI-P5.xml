@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Traumbilder I</title>
+                <author>Heinrich Heine</author>
+            </titleStmt>
+            <publicationStmt>
+                <p>For testing</p>
+            </publicationStmt>
+            <sourceDesc>
+                <listWit>
+                    <witness xml:id="A1">
+                        <bibl>Erste Auflage, Hamburg, entnommen dem Deutschen Textarchiv.
+                            <ptr
+                                target="https://www.deutschestextarchiv.de/book/view/heine_lieder_1827?p=13"
+                            /></bibl>
+                    </witness>
+                    <witness xml:id="B">
+                        <bibl>Fantasie: Varianten sollen die Funktionweise des Apparats zeigen.</bibl>
+                    </witness>
+                </listWit>
+            </sourceDesc>
+        </fileDesc>
+        <include xmlns="http://www.w3.org/2001/XInclude" href="vocabulary.xml" xpointer="encodingDesc"/>
+    </teiHeader>
+    <text>
+        <body>
+            <pb facs="#f0013" n="[5]"/>
+            <lg type="poem">
+                <head>Traumbilder I</head>
+                <lg n="1">
+                    <l>Mir träumte einſt von wildem Liebesglühen,</l>
+                    <l>Von hübſchen Locken, Myrthen und Reſede,</l>
+                    <l><app><lem>Von ſüßen Lippen und von bittrer Rede.</lem><rdg wit="#B">Von illen Füßen und von b'rittner Rede,</rdg></app></l>
+                    <l>Von <app><lem>düſtrer Lieder</lem><rdg wit="#B">dürft'gen Märschen</rdg></app> düſtern Melodien.</l>
+                </lg>
+                <lg n="2">
+                    <l>Verblichen und verweht <choice>
+                            <corr>ſind</corr>
+                            <sic>find</sic>
+                        </choice>
+                        <unclear>längſt</unclear>  die Träume,</l>
+                    <l>Verweht iſt gar  <choice>
+                            <unclear>mein</unclear>
+                            <unclear>dein</unclear>
+                        </choice>  liebſtes Traumgebild!</l>
+                    <l>Geblieben iſt mir nur, was glutherfüllt</l>
+                    <l>Ich einſt gegoſſen hab' in weiche Reime.</l>
+                </lg>
+                <lg n="3">
+                    <l>Du bleibſt, verwaiſtes Lied! Verweh' jetzt auch,</l>
+                    <l>Und ſuch' das Traumbild, das mir längſt
+                        entſchwunden,</l>
+                    <l>Und grüß' es mir, wenn du es aufgefunden &#x2014;</l>
+                    <l>Dem luft'gen Schatten ſend' ich luft'gen Hauch.</l>
+                </lg>
+            </lg>
+        </body>
+    </text>
+</TEI>
