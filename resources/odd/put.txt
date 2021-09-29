@@ -1,0 +1,2 @@
+cd apps/scdh-edition/resources/odd
+put SCDH.odd

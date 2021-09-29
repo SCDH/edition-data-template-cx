@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+This describes which files are packaged to the TEI-Publisher
+xar-package. So if you want to include file to the online publication
+platform or if you want to exclude them from there, then this file has
+to be edited.
+
+The packaging process is defined by several <fileSet>
+declarations. See below. File set 1 and 2 are responsible for
+selecting/unselecting TEI files. File set 1 defines, which files are
+packaged just like they are present in the git repository, while file
+set 2 defines, which files are taken after an XSL transformation in
+the first place. This transformation is defined in the pom.xml file.
+ 
+-->
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+
+    <id>xar</id>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <formats>
+        <format>zip</format>
+    </formats>
+
+    <fileSets>
+	<!-- Sets of files to be included or excluded from the online
+	     publication platform. -->
+
+	<!-- 1. Move non-transformed files into content directory. -->
+	<fileSet>
+	    <outputDirectory>/content/</outputDirectory>
+	    <directory>${project.basedir}</directory>
+	    <includes>
+		<!-- Take all xml files from the repository's root folder. -->
+		<include>*.xml</include>
+		<include>Test/Heine-Traumbilder1.xml</include>
+	    </includes>
+	    <excludes>
+		<!-- exclude maven project file -->
+		<exclude>pom.xml</exclude>
+	    </excludes>
+	</fileSet>
+
+	<!-- 2. Move XSL-transformed TEI data into a content directory. -->
+	<fileSet>
+	    <outputDirectory>/content/</outputDirectory>
+	    <directory>${project.build.directory}/generated-resources/xml/xslt</directory>
+	    <includes>
+		<!-- include TEI files from arbitrary deep subfolders -->
+		<include>**/*${tei.suffix}</include>
+	    </includes>
+	    <excludes>
+		<!-- exclude maven project file -->
+		<exclude>pom.xml</exclude>
+		<!-- exclude resources -->
+		<exclude>/resources/**</exclude>
+	    </excludes>
+	</fileSet>
+
+	<!-- 3. Move resources into content/resources. While some
+	     resources (the ODD, the schemas and xml catalogs) may be
+	     needed on the publication platform, others are not
+	     (resources for oXygen, XSL transformations). -->
+	<fileSet>
+	    <outputDirectory>/content/</outputDirectory>
+	    <directory>${project.basedir}</directory>
+	    <excludes>
+		<exclude>*</exclude>
+	    </excludes>
+	    <includes>
+		<include>/resources/schema/*</include>
+		<include>/resources/odd/*</include>
+		<include>/resources/catalog.xml</include>
+	    </includes>
+	</fileSet>
+
+	<!-- 4.a) Move exist-db package description into the package root -->
+	<fileSet>
+	    <outputDirectory>/</outputDirectory>
+	    <directory>${project.basedir}/resources/exist-db</directory>
+	    <excludes>
+		<exclude>assembly.xml</exclude>
+		<exclude>*.xsl</exclude>
+		<exclude>expath-pkg.xml</exclude>
+		<exclude>catalog.xml</exclude>
+		<!--exclude>repo.xml</exclude-->
+	    </excludes>
+	    <includes>
+		<include>*</include>
+	    </includes>
+	</fileSet>
+	<!-- 4.b) Move generated exist-db package description into the package root -->
+	<fileSet>
+	    <outputDirectory>/</outputDirectory>
+	    <directory>${project.build.directory}/generated-resources/xml/xslt</directory>
+	    <includes>
+		<include>expath-pkg.xml</include>
+		<!--include>repo.xml</include-->
+	    </includes>
+	</fileSet>
+
+    </fileSets>
+
+</assembly>

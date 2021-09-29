@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta xmlns="http://exist-db.org/xquery/repo">
+    <description>Edition des Gesamtwerks von ...</description>
+    <author>ALEA</author>
+    <website/>
+    <status>alpha</status>
+    <license>TODO</license>
+    <copyright>true</copyright>
+    <type>application</type>
+    <target>edition-data-template-cqc</target>
+    <prepare>pre-install.xql</prepare>
+    <finish>post-install.xql</finish>
+    <!-- permissions are replaced by XSLT during maven packaging -->
+    <permissions
+	   xmlns:repo="http://exist-db.org/xquery/repo"
+	   user="tei"
+	   group="tei"
+	   password="simple"
+	   mode="rw-r--r--" />
+</meta>

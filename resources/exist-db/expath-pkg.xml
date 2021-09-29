@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Please note that the version number is set automatically from pom.xml by maven. -->
+<package
+    xmlns="http://expath.org/ns/pkg"
+    name="http://scdh.wwu.de/edition-data-template-cqc"
+    abbrev="edition-data-template-cqc"
+    version="0.1"
+    spec="1.0">
+    <title>Edition des Gesamtwerks von ...</title>
+    <dependency package="http://exist-db.org/apps/shared"/>
+</package>

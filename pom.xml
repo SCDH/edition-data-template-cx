@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- See documentation in resources/README.md -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.wwu.ulb.scdh</groupId>
+    <artifactId>edition-data-template-cqc</artifactId>
+    <version>0.1.0</version>
+
+    <name>Edition</name>
+    <url>https://zivgitlab.uni-muenster.de/SCDH/tei-processing/edition-data-template-cqc</url>
+
+    <properties>
+        <exist.db.permissions>tei,tei,simple,rwxrwxr__</exist.db.permissions>
+        <distribution.url>https://zivgitlab.uni-muenster.de/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</distribution.url>
+        <!--distribution.url>https://zivgitlab.uni-muenster.de/api/v4/projects/2686/packages/maven</distribution.url-->
+        <ph.schematron.version>5.6.4</ph.schematron.version>
+        <tei.suffix>.TEI-P5.xml</tei.suffix>
+	<saxon.version>10.2</saxon.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <!-- set secret user credentials from environment variable -->
+            <id>ci/cd</id>
+            <activation>
+                <property>
+                    <name>env.EXIST_DB_PERMISSIONS</name>
+                </property>
+            </activation>
+            <properties>
+                <!-- Override only if declared -->
+                <exist.db.permissions>${env.EXIST_DB_PERMISSIONS}</exist.db.permissions>
+            </properties>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <repository>
+            <id>gitlab-maven</id>
+            <url>${distribution.url}</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>gitlab-maven</id>
+            <url>${distribution.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>gitlab-maven</id>
+            <url>${distribution.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>${saxon.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- Do not make a JAR-file! -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                        <configuration>
+                            <finalName>unwanted</finalName>
+                            <classifier>unwanted</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <!-- create XAR distribution for exist-db.
+                                     Note: This actually creates a zip file.
+                                     We have to rename it (see below with antrun). -->
+                                <descriptor>resources/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <!-- change suffix of zip-file to .xar -->
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target name="copy and rename file">
+                                <copy
+                                    file="${project.build.directory}/${project.artifactId}-${project.version}.zip"
+                                    tofile="${project.build.directory}/${project.artifactId}-${project.version}.xar" />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+		    <execution>
+			<id>mvn.log</id>
+			<phase>generate-sources</phase>
+			<configuration>
+			    <target name="assert target/mvn.log">
+				<touch file="target/mvn.log"/>
+			    </target>
+			</configuration>
+			<goals>
+			    <goal>run</goal>
+			</goals>
+		    </execution>
+                </executions>
+            </plugin>
+
+            <!-- testing wellformedness, schema correctness and transforming -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <version>1.0.2</version>
+                <executions>
+                    <execution>
+                        <id>svrl-tei_all-embedded</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                        <configuration>
+                            <transformationSets>
+                                <transformationSet>
+                                    <dir>${project.basedir}</dir>
+                                    <includes>
+                                        <include>**/*${tei.suffix}</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>target/**</exclude>
+                                        <exclude>resources/**</exclude>
+                                        <exclude>templates/**</exclude>
+                                        <exclude>samples/**</exclude>
+                                        <exclude>Test/**</exclude>
+                                    </excludes>
+                                    <stylesheet>target/schxslt/tei_all.xslt</stylesheet>
+                                    <fileMappers>
+                                        <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+                                            <targetExtension>.tei_all.svrl</targetExtension>
+                                        </fileMapper>
+                                    </fileMappers>
+                                </transformationSet>
+                            </transformationSets>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>svrl-witness</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                        <configuration>
+                            <transformationSets>
+                                <transformationSet>
+                                    <dir>${project.basedir}</dir>
+                                    <includes>
+                                        <include>**/*${tei.suffix}</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>target/**</exclude>
+                                        <exclude>resources/**</exclude>
+                                        <exclude>templates/**</exclude>
+                                        <exclude>samples/**</exclude>
+                                        <exclude>Test/**</exclude>
+                                    </excludes>
+                                    <stylesheet>target/schxslt/witness.xslt</stylesheet>
+                                    <fileMappers>
+                                        <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+                                            <targetExtension>.witness.svrl</targetExtension>
+                                        </fileMapper>
+                                    </fileMappers>
+                                </transformationSet>
+                            </transformationSets>
+                        </configuration>
+                    </execution>
+		    <!-- ADAPT: add other generations of schematron
+			 reports here! Use the pattern from above. --> 
+                    <execution>
+                        <id>svrl2html</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                        <configuration>
+                            <transformationSets>
+                                <transformationSet>
+                                    <dir>${project.basedir}</dir>
+                                    <includes>
+                                        <include>**/*.svrl</include>
+                                    </includes>
+                                    <stylesheet>resources/xsl/svrl2html.xsl</stylesheet>
+                                    <fileMappers>
+                                        <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+                                            <targetExtension>.html</targetExtension>
+                                        </fileMapper>
+                                    </fileMappers>
+                                </transformationSet>
+                            </transformationSets>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>wellformedness and TEI schema</id>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                        <phase>test</phase>
+                        <configuration>
+                            <catalogHandling>strict</catalogHandling>
+                            <catalogs>
+                                <catalog>${project.basedir}/resources/catalog.xml</catalog>
+                            </catalogs>
+                            <validationSets>
+                                <!-- wellformedness of all xml files in the house -->
+                                <validationSet>
+                                    <dir>${project.basedir}</dir>
+                                    <includes>
+                                        <include>**/*${tei.suffix}</include>
+                                        <include>**/*.xsl</include>
+                                        <include>**/*.xml</include>
+                                    </includes>
+                                </validationSet>
+                                <!-- TEI schema validation -->
+                                <!-- https://www.mojohaus.org/xml-maven-plugin/examples/validate-relaxng.html -->
+                                <validationSet>
+                                    <dir>${project.basedir}</dir>
+                                    <includes>
+                                        <include>**/*${tei.suffix}</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>target/**</exclude>
+                                        <exclude>resources/**</exclude>
+                                        <exclude>templates/**</exclude>
+                                        <exclude>Test/**</exclude>
+                                        <exclude>samples/**</exclude>
+                                    </excludes>
+                                    <systemId>resources/schema/tei_all.rng</systemId>
+                                    <validating>true</validating>
+                                    <schemaLanguage>http://relaxng.org/ns/structure/1.0</schemaLanguage>
+                                    <xincludeAware>true</xincludeAware>
+                                </validationSet>
+                            </validationSets>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>transform</id>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <catalogs>
+                                <catalog>${project.basedir}/resources/catalog.xml</catalog>
+                            </catalogs>
+                            <transformationSets>
+                                <!-- adjust expath package descriptor -->
+                                <transformationSet>
+                                    <dir>resources/exist-db</dir>
+                                    <includes>
+                                        <include>expath-pkg.xml</include>
+                                    </includes>
+                                    <stylesheet>resources/exist-db/expath-pkg.xsl</stylesheet>
+                                    <parameters>
+                                        <parameter>
+                                            <name>pom-file</name>
+                                            <value>${project.basedir}/pom.xml</value>
+                                        </parameter>
+                                    </parameters>
+                                </transformationSet>
+                                <!-- adjust exist-db repo.xml -->
+                                <transformationSet>
+                                    <dir>resources/exist-db</dir>
+                                    <includes>
+                                        <include>repo.xml</include>
+                                    </includes>
+                                    <stylesheet>resources/exist-db/repo.xsl</stylesheet>
+                                    <parameters>
+                                        <parameter>
+                                            <name>permissions</name>
+                                            <value>${exist.db.permissions}</value>
+                                        </parameter>
+                                        <parameter>
+                                            <name>remove-permissions</name>
+                                            <value>true</value>
+                                        </parameter>
+                                    </parameters>
+                                </transformationSet>
+                                <!-- resolve XInclude -->
+                                <transformationSet>
+                                    <dir>${project.basedir}</dir>
+                                    <includes>
+                                        <include>**/*${tei.suffix}</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>target/**</exclude>
+                                        <exclude>resources/**</exclude>
+                                        <exclude>samples/**</exclude>
+                                        <exclude>templates/**</exclude>
+                                        <exclude>Test/**</exclude>
+                                    </excludes>
+                                    <stylesheet>resources/xsl/git2exist.xsl</stylesheet>
+                                </transformationSet>
+                            </transformationSets>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sf.saxon</groupId>
+                        <artifactId>Saxon-HE</artifactId>
+                        <version>${saxon.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.componentcorp.xml.validation</groupId>
+                        <artifactId>jxvc</artifactId>
+                        <version>0.9.4</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.componentcorp.xml.validation</groupId>
+                        <artifactId>relaxng</artifactId>
+                        <version>0.9.4</version>
+                    </dependency>
+                    <!-- https://mvnrepository.com/artifact/xml-resolver/xml-resolver -->
+                    <dependency>
+                        <groupId>xml-resolver</groupId>
+                        <artifactId>xml-resolver</artifactId>
+                        <version>1.2</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- schematron validation -->
+            <plugin>
+                <groupId>com.helger.maven</groupId>
+                <artifactId>ph-schematron-maven-plugin</artifactId>
+                <version>${ph.schematron.version}</version>
+                <executions>
+                    <execution>
+                        <id>sch2xslt</id>
+                        <goals>
+                            <goal>convert</goal>
+                        </goals>
+                        <configuration>
+                            <schematronDirectory>${basedir}/resources/schema</schematronDirectory>
+                            <xsltDirectory>target/schxslt</xsltDirectory>
+                            <languageCode>de</languageCode>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>witness</id>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                        <phase>test</phase>
+                        <configuration>
+                            <schematronProcessingEngine>schematron</schematronProcessingEngine>
+                            <schematronFile>resources/schema/witness.sch</schematronFile>
+                            <xmlDirectory>${project.basedir}</xmlDirectory>
+                            <xmlExcludes>target/**</xmlExcludes>
+                            <xmlIncludes>**/*${tei.suffix}</xmlIncludes>
+                            <svrlDirectory>target/schematron-reports/witness</svrlDirectory>
+                            <failFast>false</failFast>
+                        </configuration>
+                    </execution>
+		    <!-- ADAPT: add other schematron validations here! -->
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.helger</groupId>
+                        <artifactId>ph-schematron</artifactId>
+                        <version>${ph.schematron.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+	    <plugin>
+		<!-- For xslt that starts with a named template or for
+		     xqueries, the exec-maven-plugin has to be used. -->
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>exec-maven-plugin</artifactId>
+		<version>3.0.0</version>
+		<executions>
+		    <execution>
+			<id>mvnlog.xml</id>
+			<phase>generate-resources</phase>
+			<goals>
+			    <goal>java</goal>
+			</goals>
+			<configuration>
+			    <mainClass>net.sf.saxon.Transform</mainClass>
+			    <arguments>
+				<argument>-xsl:resources/xsl/mvn2xml.xsl</argument>
+				<argument>-it:start</argument>
+				<argument>-o:target/mvnlog.xml</argument>
+			    </arguments>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>errors.html</id>
+			<phase>compile</phase>
+			<goals>
+			    <goal>java</goal>
+			</goals>
+			<configuration>
+			    <mainClass>net.sf.saxon.Query</mainClass>
+			    <arguments>
+				<argument>-q:resources/xql/svrl2htindex.xql</argument>
+				<argument>-o:target/index.html</argument>
+				<argument>repo-slotname=${project.artifactId}</argument>
+				<argument>project-title=${project.name}</argument>
+				<argument>repo-branch-uri=${project.url}/-/tree/main</argument>
+				<argument>mvnlog-file=${project.build.directory}/mvnlog.xml</argument>
+				<argument>basedir=${project.build.directory}/generated-resources/xml/xslt</argument>
+			    </arguments>
+			</configuration>
+		    </execution>
+		</executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sf.saxon</groupId>
+                        <artifactId>Saxon-HE</artifactId>
+                        <version>${saxon.version}</version>
+                    </dependency>
+		</dependencies>
+	    </plugin>
+
+        </plugins>
+    </build>
+
+</project>
