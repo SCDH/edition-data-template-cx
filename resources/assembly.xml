@@ -35,8 +35,7 @@ the first place. This transformation is defined in the pom.xml file.
 	    <directory>${project.basedir}</directory>
 	    <includes>
 		<!-- Take all xml files from the repository's root folder. -->
-		<include>*.xml</include>
-		<include>Test/Heine-Traumbilder1.xml</include>
+		<include>Vokabular.xml</include>
 	    </includes>
 	    <excludes>
 		<!-- exclude maven project file -->
