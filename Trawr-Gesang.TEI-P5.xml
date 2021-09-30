@@ -16,7 +16,7 @@
             <p>https://de.wikipedia.org/wiki/Zäsur</p>
          </sourceDesc>
       </fileDesc>
-      <!--include xmlns="http://www.w3.org/2001/XInclude" href="vocabulary.xml" xpointer="encodingDesc"/-->
+      <include xmlns="http://www.w3.org/2001/XInclude" href="vocabulary.xml" xpointer="encodingDesc"/>
   </teiHeader>
   <text>
       <body>
