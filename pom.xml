@@ -6,7 +6,7 @@
 
     <!-- adapt to your project! -->
     <groupId>de.wwu.ulb.scdh</groupId>
-    <artifactId>edition-data-template-cqc</artifactId>
+    <artifactId>edition-data-template-cx</artifactId>
     <version>0.1.0</version>
 
     <!-- adapt to your project! -->
@@ -22,8 +22,8 @@
     <!-- adapt to your needs! -->
     <licenses>
         <license>
-            <name>GNU General Public License, version 3</name>
-            <url>https://gplv3.fsf.org/</url>
+            <name>CC0</name>
+            <url>http://creativecommons.org/publicdomain/zero/1.0/</url>
         </license>
     </licenses>
 
