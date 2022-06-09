@@ -7,20 +7,7 @@
         name="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng"
         uri="schema/ADAPT.rng"/-->
     <!--systemSuffix
-        systemIdSuffix="tei_all.rng"
+        systemIdSuffix="tei/custom/schema/relaxng/tei_all.rng"
         uri="schema/ADAPT.rng"/-->
-
-    <!-- Vokabular.xml in the project root -->
-    <systemSuffix systemIdSuffix="vocabulary.xml" uri="../Vokabular.xml"/>
-    <systemSuffix uriSuffix="vocabulary.xml" uri="../Vokabular.xml"/>
-    <systemSuffix systemIdSuffix="ADAPT/Vokabular.xml" uri="../Vokabular.xml"/>
-    
-    <!-- Literaturverzeichnis -->
-    <systemSuffix systemIdSuffix="ADAPT-framework/samples/biblio.xml" uri="../Literaturverzeichnis.xml"/>
-    <uriSuffix uriSuffix="ADAPT-framework/samples/biblio.xml" uri="../Literaturverzeichnis.xml"/>
-
-    <!-- Verzeichnis der Textzeugen -->
-    <systemSuffix systemIdSuffix="ADAPT-framework/samples/witnesses.xml" uri="../Textzeugen.xml"/>
-    <uriSuffix uriSuffix="ADAPT-framework/samples/witnesses.xml" uri="../Textzeugen.xml"/>
 
 </catalog>
