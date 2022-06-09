@@ -3,13 +3,14 @@
 - Continuous quality control (CQC): [Overview of formal
   issues](https://scdh.github.io/edition-data-template-cx/)
 
-- [Technical documentation](resources/README.md)
+- [Technical documentation (german)](resources/README.md)
 
 
 This repository is a template for collections of TEI documents like
 the
 [tei-publisher-data-template](https://github.com/eeditiones/tei-publisher-data-template)
-with automation of processes on top.
+which it is based on, but it comes with automation of common processes
+on top.
 
 - validation of TEI documents against schema files (Relax NG and
   Schematron)
@@ -25,7 +26,7 @@ with automation of processes on top.
 
 - automatic deployment of the XAR package to a running eXist-db
   instance on each push, if and only if the validation has been
-  successful (TODO).
+  successful. (WIP)
   
 The automation is driven with Maven in order to make it platform
 independent and to encapsulate jar management.

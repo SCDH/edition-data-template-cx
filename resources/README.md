@@ -67,6 +67,9 @@ Insbeondere sind folgende `<properties>` anzupassen:
   Umgebungsvariable `EXIST_DB_PERMISSIONS` an der Kommandozeile
   bzw. als CI/CD-Variable gesetzt werden.
 
+- `repo.slotname`: the path segment that represents the root folder of
+  the project. The HTML error report will be empty, if this is not set
+  up correctly.
 
 
 ### Tests und Test-Reports ###
