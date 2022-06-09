@@ -217,7 +217,7 @@
                                         <include>**/*${tei.suffix}</include>
                                     </includes>
                                     <excludes>
-                                        <exclude>${project.build.directory}/**</exclude>
+                                        <exclude>target/**</exclude>
                                         <exclude>resources/**</exclude>
                                         <exclude>templates/**</exclude>
                                         <exclude>samples/**</exclude>
@@ -249,6 +249,9 @@
                                     <includes>
                                         <include>**/*.svrl</include>
                                     </includes>
+				    <excludes>
+				       <exclude>target/**/target/**</exclude>
+				    </excludes>
                                     <stylesheet>resources/xsl/svrl2html.xsl</stylesheet>
                                     <fileMappers>
                                         <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
@@ -288,7 +291,7 @@
                                         <include>**/*${tei.suffix}</include>
                                     </includes>
                                     <excludes>
-                                        <exclude>${project.build.directory}/**</exclude>
+                                        <exclude>target/**</exclude>
                                         <exclude>resources/**</exclude>
                                         <exclude>templates/**</exclude>
                                         <exclude>Test/**</exclude>
@@ -353,7 +356,7 @@
                                         <include>**/*${tei.suffix}</include>
                                     </includes>
                                     <excludes>
-                                        <exclude>${project.build.directory}/**</exclude>
+                                        <exclude>target/**</exclude>
                                         <exclude>resources/**</exclude>
                                         <exclude>samples/**</exclude>
                                         <exclude>templates/**</exclude>
