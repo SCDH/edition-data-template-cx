@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml"
+	schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<!-- 
+   Die folgende DTD und die Auszeichnungen des Attributs @xml:id in
+   verschiedenen Elementen ist nötig, damit XInclude und XPointer mit
+   'bare names' in verschiedenen XML-Anwendungen funktionieren, bei
+   denen das Dokument mit Xerces geparst wird.
+   
+   Vgl. https://www.w3.org/TR/WD-xptr#bare-names
+   Vgl. https://stackoverflow.com/questions/50294372/trying-to-use-xinclude-with-java-and-resolving-the-fragment-with-xmlid/50332840#50332840
+   Vgl. https://github.com/mojohaus/xml-maven-plugin/issues/61
+   
+   oXygen kommt auch ohne diese DTD aus, und in Maven benutzen wir den
+   für oXygen gepatchten Xerces Parser.
+-->
+<!DOCTYPE TEI [
+   <!ATTLIST encodingDesc xml:id ID #IMPLIED>
+   <!ATTLIST metDecl xml:id ID #IMPLIED>
+]>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+   <teiHeader>
+      <fileDesc>
+         <titleStmt>
+            <title>Annotationsvokabular für die Edition</title>
+         </titleStmt>
+         <publicationStmt>
+            <p>Publication Information</p>
+         </publicationStmt>
+         <sourceDesc>
+            <p/>
+         </sourceDesc>
+      </fileDesc>
+      <encodingDesc xml:id="encodingDesc">
+         <variantEncoding method="parallel-segmentation" location="internal"/>
+	 <classDecl>
+            <!-- Typen von seg-Elementen: Taxonmie für seg/@type +
+		 seg/@subtype -->
+            <taxonomy xml:id="segment">
+               <category xml:id="verbatim">
+                  <catDesc xml:lang="de">Wortgetreues Zitat</catDesc>
+                  <catDesc xml:lang="en">Verbatim quotation</catDesc>
+                  <category xml:id="verbatim-holy">
+                     <catDesc xml:lang="de">Wortgetreues Zitat aus dem heiligen Text</catDesc>
+                     <catDesc xml:lang="en">Verbatim quotation from the holy text</catDesc>
+                  </category>
+               </category>
+               <category xml:id="analogous">
+                  <catDesc xml:lang="de">Sinngemäßes Zitat</catDesc>
+                  <catDesc xml:lang="en">Analogous quotation</catDesc>
+               </category>
+            </taxonomy>
+         </classDecl>
+      </encodingDesc>
+   </teiHeader>
+   <text>
+      <body>
+         <p>Der Hauptteil dieser Datei bleibt leer. Das Wichtige steht im Kopf der Datei.</p>
+      </body>
+   </text>
+</TEI>

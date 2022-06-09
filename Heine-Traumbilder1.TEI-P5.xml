@@ -23,7 +23,7 @@
                 </listWit>
             </sourceDesc>
         </fileDesc>
-        <include xmlns="http://www.w3.org/2001/XInclude" href="vocabulary.xml" xpointer="encodingDesc"/>
+        <include xmlns="http://www.w3.org/2001/XInclude" href="common.TEI-P5.xml" xpointer="encodingDesc"/>
     </teiHeader>
     <text>
         <body>

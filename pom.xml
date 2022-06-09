@@ -4,20 +4,66 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- adapt to your project! -->
     <groupId>de.wwu.ulb.scdh</groupId>
     <artifactId>edition-data-template-cqc</artifactId>
     <version>0.1.0</version>
 
+    <!-- adapt to your project! -->
     <name>Edition</name>
     <url>https://zivgitlab.uni-muenster.de/SCDH/tei-processing/edition-data-template-cqc</url>
 
+    <!-- replace with your own! -->
+    <organization>
+        <name>Service Center of Digital Humanities, ULB, University of Münster</name>
+        <url>https://www.uni-muenster.de/SCDH/</url>
+    </organization>
+
+    <!-- adapt to your needs! -->
+    <licenses>
+        <license>
+            <name>GNU General Public License, version 3</name>
+            <url>https://gplv3.fsf.org/</url>
+        </license>
+    </licenses>
+
+    <!-- adapt to your project! -->
+    <scm>
+        <connection>scm:git:${project.url}.git</connection>
+        <developerConnection>scm:git:${project.url}.git</developerConnection>
+        <url>scm:git:${project.url}.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
-        <exist.db.permissions>tei,tei,simple,rwxrwxr__</exist.db.permissions>
-        <distribution.url>https://zivgitlab.uni-muenster.de/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</distribution.url>
-        <!--distribution.url>https://zivgitlab.uni-muenster.de/api/v4/projects/2686/packages/maven</distribution.url-->
-        <ph.schematron.version>5.6.4</ph.schematron.version>
+        <!-- adapt this in order to find the TEI documents -->
         <tei.suffix>.TEI-P5.xml</tei.suffix>
-	<saxon.version>10.2</saxon.version>
+
+        <!-- the schema's base filename without extension -->
+        <schema.basename>tei_all</schema.basename>
+        <!-- paths to schema files, derived from the basename -->
+        <relaxng.schema>${project.basedir}/resources/schema/${schema.basename}.rng</relaxng.schema>
+        <schematron.schema>${project.basedir}/resources/schema/${schema.basename}.sch</schematron.schema>
+
+	<!-- transform TEI documents before packetizing to XAR -->
+	<xar.transform.stylesheet>resources/xsl/id.xsl</xar.transform.stylesheet>
+	<!-- true expands XIncludes, false does not -->
+	<xar.transform.xincludeAware>false</xar.transform.xincludeAware>
+
+	<!-- XML catalog for transformations and validations -->
+	<xml.catalog>${project.basedir}/resources/catalog.xml</xml.catalog>
+
+        <!-- this should be overridden with secrets in the CI/CD
+             pipeline -->
+        <exist.db.permissions>tei,tei,simple,rwxrwxr__</exist.db.permissions>
+
+        <!-- if deployed on gitlab, adapt this to your project -->
+        <gitlab.instance>https://zivgitlab.uni-muenster.de</gitlab.instance>
+
+        <distribution.url.gitlab>${gitlab.instance}/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</distribution.url.gitlab>
+        <ph.schematron.version>5.6.4</ph.schematron.version>
+        <saxon.version>10.2</saxon.version>
+        <oxygen.version>21.1.0.2</oxygen.version>
     </properties>
 
     <profiles>
@@ -36,23 +82,33 @@
         </profile>
     </profiles>
 
+    <!-- Optional: use gitlab repository for distributing packages -->
+    <!--
     <repositories>
         <repository>
             <id>gitlab-maven</id>
-            <url>${distribution.url}</url>
+            <url>${distribution.url.gitlab}</url>
         </repository>
     </repositories>
-
     <distributionManagement>
         <repository>
             <id>gitlab-maven</id>
-            <url>${distribution.url}</url>
+            <url>${distribution.url.gitlab}</url>
         </repository>
         <snapshotRepository>
             <id>gitlab-maven</id>
-            <url>${distribution.url}</url>
+            <url>${distribution.url.gitlab}</url>
         </snapshotRepository>
     </distributionManagement>
+    -->
+
+    <pluginRepositories>
+        <pluginRepository>
+           <id>oxygenxml</id>
+           <url>https://www.oxygenxml.com/maven/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
 
     <dependencies>
         <dependency>
@@ -68,6 +124,8 @@
             <!-- Do not make a JAR-file! -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>3.2.2</version>
                 <executions>
                     <execution>
                         <id>default-jar</id>
@@ -83,6 +141,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -101,6 +160,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -121,18 +181,18 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-		    <execution>
-			<id>mvn.log</id>
-			<phase>generate-sources</phase>
-			<configuration>
-			    <target name="assert target/mvn.log">
-				<touch file="target/mvn.log"/>
-			    </target>
-			</configuration>
-			<goals>
-			    <goal>run</goal>
-			</goals>
-		    </execution>
+                    <execution>
+                        <id>mvn.log</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target name="assert ${project.build.directory}/mvn.log">
+                                <touch file="${project.build.directory}/mvn.log"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -143,7 +203,8 @@
                 <version>1.0.2</version>
                 <executions>
                     <execution>
-                        <id>svrl-tei_all-embedded</id>
+		        <!-- generate schematron reports -->
+                        <id>svrl-reports</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>transform</goal>
@@ -156,55 +217,26 @@
                                         <include>**/*${tei.suffix}</include>
                                     </includes>
                                     <excludes>
-                                        <exclude>target/**</exclude>
+                                        <exclude>${project.build.directory}/**</exclude>
                                         <exclude>resources/**</exclude>
                                         <exclude>templates/**</exclude>
                                         <exclude>samples/**</exclude>
                                         <exclude>Test/**</exclude>
                                     </excludes>
-                                    <stylesheet>target/schxslt/tei_all.xslt</stylesheet>
+                                    <stylesheet>${project.build.directory}/schxslt/${schema.basename}.xslt</stylesheet>
                                     <fileMappers>
                                         <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-                                            <targetExtension>.tei_all.svrl</targetExtension>
+                                            <targetExtension>.${schema.basename}.svrl</targetExtension>
                                         </fileMapper>
                                     </fileMappers>
                                 </transformationSet>
                             </transformationSets>
                         </configuration>
                     </execution>
+                    <!-- ADAPT: add additional generations of schematron
+                         reports here! Use the pattern from above. --> 
                     <execution>
-                        <id>svrl-witness</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>transform</goal>
-                        </goals>
-                        <configuration>
-                            <transformationSets>
-                                <transformationSet>
-                                    <dir>${project.basedir}</dir>
-                                    <includes>
-                                        <include>**/*${tei.suffix}</include>
-                                    </includes>
-                                    <excludes>
-                                        <exclude>target/**</exclude>
-                                        <exclude>resources/**</exclude>
-                                        <exclude>templates/**</exclude>
-                                        <exclude>samples/**</exclude>
-                                        <exclude>Test/**</exclude>
-                                    </excludes>
-                                    <stylesheet>target/schxslt/witness.xslt</stylesheet>
-                                    <fileMappers>
-                                        <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-                                            <targetExtension>.witness.svrl</targetExtension>
-                                        </fileMapper>
-                                    </fileMappers>
-                                </transformationSet>
-                            </transformationSets>
-                        </configuration>
-                    </execution>
-		    <!-- ADAPT: add other generations of schematron
-			 reports here! Use the pattern from above. --> 
-                    <execution>
+		        <!-- transform schematron reports to html -->
                         <id>svrl2html</id>
                         <phase>compile</phase>
                         <goals>
@@ -236,7 +268,7 @@
                         <configuration>
                             <catalogHandling>strict</catalogHandling>
                             <catalogs>
-                                <catalog>${project.basedir}/resources/catalog.xml</catalog>
+                                <catalog>${xml.catalog}</catalog>
                             </catalogs>
                             <validationSets>
                                 <!-- wellformedness of all xml files in the house -->
@@ -256,13 +288,13 @@
                                         <include>**/*${tei.suffix}</include>
                                     </includes>
                                     <excludes>
-                                        <exclude>target/**</exclude>
+                                        <exclude>${project.build.directory}/**</exclude>
                                         <exclude>resources/**</exclude>
                                         <exclude>templates/**</exclude>
                                         <exclude>Test/**</exclude>
                                         <exclude>samples/**</exclude>
                                     </excludes>
-                                    <systemId>resources/schema/tei_all.rng</systemId>
+                                    <systemId>${relaxng.schema}</systemId>
                                     <validating>true</validating>
                                     <schemaLanguage>http://relaxng.org/ns/structure/1.0</schemaLanguage>
                                     <xincludeAware>true</xincludeAware>
@@ -278,7 +310,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <catalogs>
-                                <catalog>${project.basedir}/resources/catalog.xml</catalog>
+                                <catalog>${xml.catalog}</catalog>
                             </catalogs>
                             <transformationSets>
                                 <!-- adjust expath package descriptor -->
@@ -313,26 +345,38 @@
                                         </parameter>
                                     </parameters>
                                 </transformationSet>
-                                <!-- resolve XInclude -->
+                                <!-- transform TEI documents before
+				     making a XAR package -->
                                 <transformationSet>
                                     <dir>${project.basedir}</dir>
                                     <includes>
                                         <include>**/*${tei.suffix}</include>
                                     </includes>
                                     <excludes>
-                                        <exclude>target/**</exclude>
+                                        <exclude>${project.build.directory}/**</exclude>
                                         <exclude>resources/**</exclude>
                                         <exclude>samples/**</exclude>
                                         <exclude>templates/**</exclude>
                                         <exclude>Test/**</exclude>
                                     </excludes>
-                                    <stylesheet>resources/xsl/git2exist.xsl</stylesheet>
+                                    <stylesheet>${xar.transform.stylesheet}</stylesheet>
+                                    <xincludeAware>${xar.transform.xincludeAware}</xincludeAware>
                                 </transformationSet>
                             </transformationSets>
                         </configuration>
                     </execution>
                 </executions>
                 <dependencies>
+		   <!-- we use a patched XML Parser, because Xerces
+		        doesn't support XInclude by IDs other than
+		        from DTD, see
+		        https://xerces.apache.org/xerces2-j/faq-xinclude.html#faq-7
+		        -->
+		   <dependency>
+		      <groupId>com.oxygenxml</groupId>
+		      <artifactId>oxygen-patched-xerces</artifactId>
+		      <version>${oxygen.version}</version>
+		   </dependency>
                     <dependency>
                         <groupId>net.sf.saxon</groupId>
                         <artifactId>Saxon-HE</artifactId>
@@ -370,27 +414,27 @@
                         </goals>
                         <configuration>
                             <schematronDirectory>${basedir}/resources/schema</schematronDirectory>
-                            <xsltDirectory>target/schxslt</xsltDirectory>
+                            <xsltDirectory>${project.build.directory}/schxslt</xsltDirectory>
                             <languageCode>de</languageCode>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>witness</id>
+                        <id>schematron-validation</id>
                         <goals>
                             <goal>validate</goal>
                         </goals>
                         <phase>test</phase>
                         <configuration>
                             <schematronProcessingEngine>schematron</schematronProcessingEngine>
-                            <schematronFile>resources/schema/witness.sch</schematronFile>
+                            <schematronFile>${schematron.schema}</schematronFile>
                             <xmlDirectory>${project.basedir}</xmlDirectory>
-                            <xmlExcludes>target/**</xmlExcludes>
+                            <xmlExcludes>${project.build.directory}/**</xmlExcludes>
                             <xmlIncludes>**/*${tei.suffix}</xmlIncludes>
-                            <svrlDirectory>target/schematron-reports/witness</svrlDirectory>
+                            <svrlDirectory>${project.build.directory}/schematron-reports/${schema.basename}</svrlDirectory>
                             <failFast>false</failFast>
                         </configuration>
                     </execution>
-		    <!-- ADAPT: add other schematron validations here! -->
+                    <!-- ADAPT: add other schematron validations here! -->
                 </executions>
                 <dependencies>
                     <dependency>
@@ -401,56 +445,56 @@
                 </dependencies>
             </plugin>
 
-	    <plugin>
-		<!-- For xslt that starts with a named template or for
-		     xqueries, the exec-maven-plugin has to be used. -->
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>exec-maven-plugin</artifactId>
-		<version>3.0.0</version>
-		<executions>
-		    <execution>
-			<id>mvnlog.xml</id>
-			<phase>generate-resources</phase>
-			<goals>
-			    <goal>java</goal>
-			</goals>
-			<configuration>
-			    <mainClass>net.sf.saxon.Transform</mainClass>
-			    <arguments>
-				<argument>-xsl:resources/xsl/mvn2xml.xsl</argument>
-				<argument>-it:start</argument>
-				<argument>-o:target/mvnlog.xml</argument>
-			    </arguments>
-			</configuration>
-		    </execution>
-		    <execution>
-			<id>errors.html</id>
-			<phase>compile</phase>
-			<goals>
-			    <goal>java</goal>
-			</goals>
-			<configuration>
-			    <mainClass>net.sf.saxon.Query</mainClass>
-			    <arguments>
-				<argument>-q:resources/xql/svrl2htindex.xql</argument>
-				<argument>-o:target/index.html</argument>
-				<argument>repo-slotname=${project.artifactId}</argument>
-				<argument>project-title=${project.name}</argument>
-				<argument>repo-branch-uri=${project.url}/-/tree/main</argument>
-				<argument>mvnlog-file=${project.build.directory}/mvnlog.xml</argument>
-				<argument>basedir=${project.build.directory}/generated-resources/xml/xslt</argument>
-			    </arguments>
-			</configuration>
-		    </execution>
-		</executions>
+            <plugin>
+                <!-- For xslt that starts with a named template or for
+                     xqueries, the exec-maven-plugin has to be used. -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>mvnlog.xml</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>net.sf.saxon.Transform</mainClass>
+                            <arguments>
+                                <argument>-xsl:resources/xsl/mvn2xml.xsl</argument>
+                                <argument>-it:start</argument>
+                                <argument>-o:${project.build.directory}/mvnlog.xml</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>errors.html</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>net.sf.saxon.Query</mainClass>
+                            <arguments>
+                                <argument>-q:${project.basedir}/resources/xql/svrl2htindex.xql</argument>
+                                <argument>-o:${project.build.directory}/index.html</argument>
+                                <argument>repo-slotname=${project.artifactId}</argument>
+                                <argument>project-title=${project.name}</argument>
+                                <argument>repo-branch-uri=${project.url}/-/tree/main</argument>
+                                <argument>mvnlog-file=${project.build.directory}/mvnlog.xml</argument>
+                                <argument>basedir=${project.build.directory}/generated-resources/xml/xslt</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
                 <dependencies>
                     <dependency>
                         <groupId>net.sf.saxon</groupId>
                         <artifactId>Saxon-HE</artifactId>
                         <version>${saxon.version}</version>
                     </dependency>
-		</dependencies>
-	    </plugin>
+                </dependencies>
+            </plugin>
 
         </plugins>
     </build>
