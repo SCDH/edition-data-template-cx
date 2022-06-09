@@ -83,7 +83,6 @@
     </profiles>
 
     <!-- Optional: use gitlab repository for distributing packages -->
-    <!--
     <repositories>
         <repository>
             <id>gitlab-maven</id>
@@ -100,7 +99,6 @@
             <url>${distribution.url.gitlab}</url>
         </snapshotRepository>
     </distributionManagement>
-    -->
 
     <pluginRepositories>
         <pluginRepository>
