@@ -36,6 +36,8 @@
     </scm>
 
     <properties>
+        <repo.slotname>${project.artifactId}</repo.slotname>
+       
         <!-- adapt this in order to find the TEI documents -->
         <tei.suffix>.TEI-P5.xml</tei.suffix>
 
@@ -479,7 +481,7 @@
                             <arguments>
                                 <argument>-q:${project.basedir}/resources/xql/svrl2htindex.xql</argument>
                                 <argument>-o:${project.build.directory}/index.html</argument>
-                                <argument>repo-slotname=${project.artifactId}</argument>
+                                <argument>repo-slotname=${repo.slotname}</argument>
                                 <argument>project-title=${project.name}</argument>
                                 <argument>repo-branch-uri=${project.url}/-/tree/main</argument>
                                 <argument>mvnlog-file=${project.build.directory}/mvnlog.xml</argument>
