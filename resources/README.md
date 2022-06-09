@@ -8,14 +8,13 @@ technische Realisierung der Edition nötig sind.
 - `catalog.xml`: ein XML-Katalog zur Umleitung von Dateipfaden und
   URLs. Wird ausgewertet von oXygen und Maven.
 - `ci_settings.xml`: Einstellungen für die CI/CD-Pipeline von gitlab
-- `css`: CSS-Dateien und Schriften für den Autor-Modus von oXygen
 - `exist-db`: Dateien, die für die Erstellung eines XAR-Pakets für
   eXist-db/TEI-publisher benötigt werden. In der CI/CD-Pipleline wird
   per Maven (vgl. [pom.xml](../pom.xml)) ein TEI-Publisher-Datenpaket
   erzeugt.
 - `schema`: Schema zur Validierung der TEI-Dateien
-- `xsl`: XSL-Transformationen für Transformationsszenarien in oXygen
-  oder für die CI/CD-Pipeline
+- `xsl`: XSL-Transformationen für die CI/CD-Pipeline
+- `xql`: XQuery-Scripts für die CI/CD-Pipeline
 - `README.md`: dieser Text hier
 
 ## Maven ##
@@ -44,6 +43,30 @@ im Wurzelverzeichnis des Repository getestet, gebaut etc. Die
 Build-Artefakte liegen anschließend im Verzeichnis `target`. Werte von
 `PHASE` siehe unten. Um Test-Reports in HTML zu erzeugen, ist der
 komplexere, zweistufige Befehl (siehe unten) auszuführen.
+
+### `pom.xml`: Adaption / Konfiguration ###
+
+Die wichtigsten Anpassungen an ein Projekt erfolgen in der Datei
+`pom.xml`. Die Datei ist kommentiert, so dass eine Anpassung keine
+Schwierigkeit bereiten sollte.
+
+Insbeondere sind folgende `<properties>` anzupassen:
+
+- `tei.suffix`: Datei-Endung der TEI Dokumente
+
+- `schema.basename`: Dateiname des Schemas ohne Datei-Endung
+
+- `transformation.stylesheet`: Pfad zum XSL-Stylesheet für die
+  Transformation vor der Paketierung
+  
+- `transformation.xincludeAware`: ob XInclude's bei der Transformation
+  vor der Paketierung expandiert werden sollen.
+  
+- `exist.db.permission`: Hier sollten Sie nicht das Passwort für die
+  Produktivumgebung hineinschreiben. Dieses sollte als
+  Umgebungsvariable `EXIST_DB_PERMISSIONS` an der Kommandozeile
+  bzw. als CI/CD-Variable gesetzt werden.
+
 
 
 ### Tests und Test-Reports ###
@@ -135,7 +158,7 @@ mvn package
 ```
 
 erzeugt das Paket, das anschließend unter
-`target/edition-data-template-cqc-<VERSION>.xar` zu finden ist. Die Version
+`target/edition-data-template-cx-<VERSION>.xar` zu finden ist. Die Version
 kann in der Datei [`pom.xml`](../pom.xml) eingestellt werden.
 
 Welche TEI-Dateien in dieser Kollektion enthalten sind und welche
