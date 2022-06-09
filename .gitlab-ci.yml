@@ -2,13 +2,13 @@
 # https://gitlab.com/gitlab-org/gitlab-foss/-/blob/master/lib/gitlab/ci/templates/Maven.gitlab-ci.yml
 
 variables:
-  MAVEN_CLI_OPTS: "--batch-mode --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  MAVEN_CLI_OPTS: "--batch-mode --fail-at-end --show-version -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -DinstallAtEnd=true -DdeployAtEnd=true"
 
 image: maven:3.6-jdk-11
 
 cache:
   paths:
-    - .m2
+    - .m2/repository
 
 # For merge requests do not `deploy` but only run `verify`.
 .verify: &verify
