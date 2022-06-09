@@ -27,9 +27,8 @@
                   <l>Ein stimm sich gund zu klagen.</l>
                   <l>Jch nam in acht <caesura/> waß die doch sagt;</l>
                   <l>That hin mit augen schlagen. </l>
-		  <!--
 		  <l><seg><l>failing schematron</l></seg></l>
-		  -->
+		  <p>not allowed</p>
                </lg>
             </lg>
       </body>
