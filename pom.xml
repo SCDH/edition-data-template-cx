@@ -11,7 +11,7 @@
 
     <!-- adapt to your project! -->
     <name>Edition</name>
-    <url>https://zivgitlab.uni-muenster.de/SCDH/tei-processing/edition-data-template-cqc</url>
+    <url>https://github.com/scdh/edition-data-template-cx</url>
 
     <!-- replace with your own! -->
     <organization>
@@ -61,6 +61,11 @@
 
         <!-- if deployed on gitlab, adapt this to your project -->
         <gitlab.instance>https://zivgitlab.uni-muenster.de</gitlab.instance>
+
+	<!-- adapt to your needs! -->
+	<repo.branch.uri.gitlab>${project.url}/-/tree/main</repo.branch.uri.gitlab>
+	<repo.branch.uri.github>${project.url}/blob/main</repo.branch.uri.github>
+	<repo.branch.uri>${repo.branch.uri.github}</repo.branch.uri>
 
         <distribution.url.gitlab>${gitlab.instance}/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</distribution.url.gitlab>
         <ph.schematron.version>5.6.4</ph.schematron.version>
@@ -481,9 +486,8 @@
                             <arguments>
                                 <argument>-q:${project.basedir}/resources/xql/svrl2htindex.xql</argument>
                                 <argument>-o:${project.build.directory}/index.html</argument>
-                                <argument>repo-slotname=${repo.slotname}</argument>
                                 <argument>project-title=${project.name}</argument>
-                                <argument>repo-branch-uri=${project.url}/-/tree/main</argument>
+                                <argument>repo-branch-uri=${repo.branch.uri}</argument>
                                 <argument>mvnlog-file=${project.build.directory}/mvnlog.xml</argument>
                                 <argument>basedir=${project.build.directory}/generated-resources/xml/xslt</argument>
                             </arguments>
