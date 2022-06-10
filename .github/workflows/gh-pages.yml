@@ -31,6 +31,9 @@ jobs:
       - name: run tests and generate report
         run: mvn test -l target/mvn.log || mvn compile
 
+      - name: show maven log
+        run: cat target/mvn.log target/mvnlog.xml
+
       - name: copy report to pages
         run: cp target/index.html public/
 
