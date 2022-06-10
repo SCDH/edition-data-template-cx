@@ -1,0 +1,37 @@
+plugins {
+    id "io.github.http-builder-ng.http-plugin" version "0.1.1"
+}
+
+
+File odd = file("${odd}")
+
+import io.github.httpbuilderng.http.HttpTask
+
+http {
+    library = 'okhttp'
+}
+
+import groovyx.net.http.HttpBuilder
+import groovyx.net.http.MultipartContent
+import groovyx.net.http.OkHttpEncoders
+import groovyx.net.http.ChainedHttpConfig
+import groovyx.net.http.ToServer
+
+println "${oxgarage_uri}"
+println odd
+
+task schematron (type:HttpTask) {
+     config {
+     	  request.uri = "${oxgarage_uri}"
+    	  request.encoder('text/xml'){ ChainedHttpConfig config, ToServer req->
+              req.toServer(new FileInputStream(odd)) }
+     }
+     post {
+	  request.uri.path = "${oxgarage_odd2sch}"
+	  request.contentType = 'multipart/form-data'
+	  request.encoder 'multipart/form-data', OkHttpEncoders.&multipart
+	  request.body = MultipartContent.multipart {
+	      part 'upload', odd.name, 'text/xml', odd
+	  }
+     }
+}

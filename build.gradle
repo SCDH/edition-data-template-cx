@@ -1,0 +1,105 @@
+plugins {
+    id 'com.github.eerohele.saxon-gradle' version '0.9.0-beta4'
+    id 'com.nwalsh.gradle.relaxng.validate' version '0.0.8'
+    id 'com.nwalsh.gradle.relaxng.translate' version '0.0.8'
+}
+
+println "Configured for TEI suffix ${tei_suffix}"
+println "Artifacts will be in ${project.buildDir}"
+
+ConfigurableFileTree sources = fileTree(dir: '.')
+String [] dirs = "${source_dirs}".split(",")
+for (String dir : dirs) {
+    sources.include dir
+}
+
+println "Operating on:"
+sources.each { File file ->
+    println file
+}
+
+
+File xmlCatalog = file("${xml_catalog}")
+
+File relaxngSchema = file("${default_schema}")
+
+
+repositories {
+    mavenCentral()
+}
+
+configurations.all {
+  resolutionStrategy {
+    // for com.nwalsh.gradle.relaxng.validate
+    force 'org.xmlresolver:xmlresolver:3.0.1beta3'
+  }
+}
+
+configurations {
+    saxon
+    mytest.extendsFrom(implementation)
+}
+
+dependencies {
+    // Use Saxon-HE 9.9.1-5 instead of the Saxon-HE version that comes with the
+    // plugin. 
+    saxon 'net.sf.saxon:Saxon-HE:9.9.1-5'
+    implementation (
+        // for com.nwalsh.gradle.relaxng.validate
+    	[group: 'org.xmlresolver', name: 'xmlresolver', version: '3.0.1beta3'],
+    	[group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30' ],
+    	[group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30' ]
+    )
+}
+
+import com.nwalsh.gradle.relaxng.validate.RelaxNGValidateTask
+import com.nwalsh.gradle.relaxng.translate.RelaxNGTranslateTask
+
+
+//task expand (type: SaxonXsltTask) {
+xslt {
+     	     stylesheet "resources/xsl/id.xsl"
+     	     input sources
+     	     output "build/expanded/"
+     	     outputDirectoryLayout "nested"
+     	     outputFileExtension "xml"
+     	     catalog xmlCatalog
+     	     xincludeAware "on"
+}
+
+//println xslt
+
+println "Output: "
+
+//for (String f : xslt.getOutputs().getFiles()) { println f }
+
+// xslt.output { File file ->
+//     println file
+// }
+
+
+relaxng_validator.configure {
+  classpath configurations.mytest
+  parallel true
+}
+
+// This configuration uses compact schemas
+relaxng_validator.configure("rnc") {
+  compact true
+  parallel false
+}
+
+// This configuration explicitly uses XML schemas
+relaxng_validator.configure("rng") {
+  compact false
+}
+
+
+task validate (type: RelaxNGValidateTask) {
+     	     input xslt.getOutputs().getFiles()[0] // we need to iterate
+     	     schema relaxngSchema
+     	     output "build/relaxng/"
+	     compact false
+	     catalog xmlCatalog
+	     feasible false
+}

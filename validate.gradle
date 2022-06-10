@@ -1,0 +1,78 @@
+plugins {
+  id 'com.nwalsh.gradle.relaxng.validate' version '0.0.8'
+  id 'com.nwalsh.gradle.relaxng.translate' version '0.0.8'
+}
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
+configurations.all {
+  resolutionStrategy {
+    // for com.nwalsh.gradle.relaxng.validate
+    force 'org.xmlresolver:xmlresolver:3.0.1beta3'
+  }
+}
+
+configurations {
+  mytest.extendsFrom(implementation)
+}
+
+dependencies {
+  implementation (
+    // for com.nwalsh.gradle.relaxng.validate
+    [group: 'org.xmlresolver', name: 'xmlresolver', version: '3.0.1beta3'],
+    [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30' ],
+    [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30' ]
+  )
+}
+
+import com.nwalsh.gradle.relaxng.validate.RelaxNGValidateTask
+import com.nwalsh.gradle.relaxng.translate.RelaxNGTranslateTask
+
+ConfigurableFileTree poems = fileTree(dir: '.')
+poems.include "Proto/**/*.${tei_suffix}"
+//poems.include "Asl/**/*.${tei_suffix}"
+
+File aleaRng = file("resources/schema/teip5alea.rng")
+File case1 = file("Proto/ProtoGim/Pgim1/Pgim1.tei")
+File case1x = file("build/xslt/Proto/ProtoGim/Pgim1/Pgim1.xml")
+File case2 = file("Proto/ProtoGim/Pgim2/Pgim2.tei")
+File case2x = file("build/xslt/Proto/ProtoGim/Pgim2/Pgim2.xml")
+File xmlCatalog = file("resources/catalog.xml")
+
+relaxng_validator.configure {
+  classpath configurations.mytest
+  parallel true
+}
+
+// This configuration uses compact schemas
+relaxng_validator.configure("rnc") {
+  compact true
+  parallel false
+}
+
+// This configuration explicitly uses XML schemas
+relaxng_validator.configure("rng") {
+  compact false
+}
+
+
+task validate (type: RelaxNGValidateTask) {
+     	     input case1
+     	     schema aleaRng
+     	     output "build/relaxng/"
+	     compact false
+	     catalog xmlCatalog
+	     feasible false
+}
+
+task validate2 (type: RelaxNGValidateTask) {
+     	     input case2
+     	     schema aleaRng
+     	     output "build/relaxng/"
+	     compact false
+	     catalog xmlCatalog
+	     feasible false
+}
