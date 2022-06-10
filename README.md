@@ -3,8 +3,6 @@
 - Continuous quality control (CQC): [Overview of formal
   issues](https://scdh.github.io/edition-data-template-cx/)
 
-- [Technical documentation (german)](resources/README.md)
-
 
 This repository is a template for collections of TEI documents like
 the
@@ -22,7 +20,8 @@ on top.
 
 - automatic generation of an Expath-Package (XAR) on each push, if and
   only if the validation has been successful. The TEI documents can be
-  transformed via XSLT before being assembled into the package.
+  transformed via XSLT before being assembled into the package. The
+  default transformation is simply the identity transformation.
 
 - automatic deployment of the XAR package to a running eXist-db
   instance on each push, if and only if the validation has been
@@ -37,6 +36,9 @@ It runs in the CI/CD pipelines of gitlab runner, see
 
 
 # Usage
+
+To use this template, I suggest to download on of the zip files in the
+current release and unzip it to your edition's root folder.
 
 [Maven](https://maven.apache.org/) is required. Maven will install all
 other required software (Saxon, etc.) on the first run.
@@ -60,7 +62,13 @@ For running in CI/CD pipelines have a look at `.gitlab-ci.yml`
 will trigger pipelines on each push to the `main` branch.
 
 
-See [technical documentation (german)](resources/README.md) for details.
+All configuration can be done in the maven build file `pom.xml`. See
+the comments in there and have a look at [technical documentation
+(german)](resources/README.md) for details of adaption.
+
+The file `resources/assembly.xml` determines which files go into the
+xar package. You can set inclusion and exclusion patterns for TEI
+documents there.
 
 
 # Roadmap
