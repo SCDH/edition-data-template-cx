@@ -1,0 +1,48 @@
+name: Create release
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+-?**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: make zip packages
+        run: ./release.sh
+
+      - name: create release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body_path: changeLog.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: upload gitlab package to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: tei-data-template-cx-gitlab.zip
+          asset_name: tei-data-template-cx-gitlab.zip
+          asset_content_type: application/zip
+
+      - name: upload github package to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: tei-data-template-cx-github.zip
+          asset_name: tei-data-template-cx-github.zip
+          asset_content_type: application/zip
