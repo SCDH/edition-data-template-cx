@@ -83,7 +83,7 @@ declare function scdh:count-errors($reports) as xs:integer
                 </thead>
                 {
                     for $report in $reports
-                    let $tei-relpath := tokenize($report//svrl:active-pattern[@document][1]/@document, concat($repo-slotname, '/'))[2]
+                    let $tei-relpath := tokenize($report//svrl:active-pattern[@document][1]/@document, concat($repo-slotname, '/'))[last()]
                         group by $tei-relpath
                         order by $tei-relpath
                     let $tei-uri := string-join(($repo-branch-uri, $tei-relpath), '/')
