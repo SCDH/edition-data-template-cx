@@ -11,12 +11,15 @@ which it is based on, but it comes with automation of common processes
 on top.
 
 - validation of TEI documents against schema files (Relax NG and
-  Schematron)
+  Schematron). A patched version of the Xerces XML parser is used for
+  validation, so that XIncludes with XPointers with bare names (IDs)
+  are correctly expanded.
 
-- human-readable reports of the Relax NG and the schematron validation
-  generated continuously and published on gitlab/github pages on each
-  push to the repository (i.e. continuous integration for TEI
-  documents)
+- [human-readable
+  reports](https://scdh.github.io/edition-data-template-cx/) of the
+  Relax NG and the schematron validation generated continuously and
+  published on gitlab/github pages on each push to the repository
+  (i.e. continuous integration for TEI documents)
 
 - automatic generation of an Expath-Package (XAR) on each push, if and
   only if the validation has been successful. The TEI documents can be
@@ -37,8 +40,10 @@ It runs in the CI/CD pipelines of gitlab runner, see
 
 # Usage
 
-To use this template, I suggest to download on of the zip files in the
-current release and unzip it to your edition's root folder.
+To use this template, I suggest to download one of the zip files in the
+current
+[release](https://github.com/SCDH/edition-data-template-cx/releases)
+and unzip it to your edition's root folder.
 
 [Maven](https://maven.apache.org/) is required. Maven will install all
 other required software (Saxon, etc.) on the first run.
