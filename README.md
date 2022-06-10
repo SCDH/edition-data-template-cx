@@ -36,6 +36,43 @@ It runs in the CI/CD pipelines of gitlab runner, see
 [workflows](.github/workflows/gh-pages.yml).
 
 
+# Usage
+
+[Maven](https://maven.apache.org/) is required. Maven will install all
+other required software (Saxon, etc.) on the first run.
+
+Make the package:
+
+```shell
+mvn package
+```
+
+Generate the human-readable reports:
+
+```shell
+mvn test -l target/mvn.log || mvn compile
+```
+
+The package and the report will be in the `target` folder.
+
+For running in CI/CD pipelines have a look at `.gitlab-ci.yml`
+(gitlab) and `.github/workflows` (github). The presence of these files
+will trigger pipelines on each push to the `main` branch.
+
+
+See [technical documentation (german)](resources/README.md) for details.
+
+
+# Roadmap
+
+- Automatic deployment on running eXist-db instance
+
+- Replace Maven with Gradle, because Gradle is an incremental build
+  system and DAG processor and speeds things up.
+
+- Parse TEI documents for `model` PIs and use these for validation,
+  use default schema if no PI present.
+
 # License
 
 Written in 2021, 2022 by Christian Lück
