@@ -10,7 +10,8 @@ declare variable $abspath external := '';
 
 declare variable $mvnlog-file external := '../../target/mvnlog.xml';
 
-declare variable $repo-slotname external := 'edition-data-template-cqc';
+(: $repo-slotname works with this default value in most places, but does not work with the default value of $mvnlog-file :)
+declare variable $repo-slotname external := let $path-segments := tokenize($mvnlog-file, '/') return $path-segments[last() - 2];
 declare variable $repo-branch-uri external := concat('file:../../', $repo-slotname);
 
 declare variable $project-title external := 'Edition';
@@ -104,6 +105,19 @@ declare function scdh:count-errors($reports) as xs:integer
                             <td>{$errors}</td>
                         </tr>)
                 }
+            </table>
+        </section>
+        <section style="margin-top: 5em;">
+            <head>Technical Information:</head>
+            <table>
+                <tr>
+                    <td>Repository branch:</td>
+                    <td>{$repo-branch-uri}</td>
+                </tr>
+                <tr>
+                    <td>Repository slot name / base folder name:</td>
+                    <td>{$repo-slotname}</td>
+                </tr>
             </table>
         </section>
     </body>
