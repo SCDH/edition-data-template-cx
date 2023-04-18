@@ -22,8 +22,8 @@
     <!-- adapt to your needs! -->
     <licenses>
         <license>
-            <name>CC0</name>
-            <url>http://creativecommons.org/publicdomain/zero/1.0/</url>
+            <name>${exist.pkg.license}</name>
+            <url>${exist.pkg.license.url}</url>
         </license>
     </licenses>
 
@@ -55,9 +55,15 @@
 	<!-- XML catalog for transformations and validations -->
 	<xml.catalog>${project.basedir}/resources/catalog.xml</xml.catalog>
 
+	<exist.pkg.user>tei</exist.pkg.user>
+	<exist.pkg.group>tei</exist.pkg.group>
+	<exist.pkg.permissions>rwxrwxrwx</exist.pkg.permissions>
+	<exist.pkg.author>TODO</exist.pkg.author>
+	<exist.pkg.license>CC0</exist.pkg.license>
+	<exist.pkg.license.url>http://creativecommons.org/publicdomain/zero/1.0/</exist.pkg.license.url>
         <!-- this should be overridden with secrets in the CI/CD
              pipeline -->
-        <exist.db.permissions>tei,tei,simple,rwxrwxr__</exist.db.permissions>
+	<exist.pkg.password>simple</exist.pkg.password>
 
         <!-- if deployed on gitlab, adapt this to your project -->
         <gitlab.instance>https://zivgitlab.uni-muenster.de</gitlab.instance>
@@ -67,6 +73,8 @@
 	<repo.branch.uri.github>${project.url}/blob/main</repo.branch.uri.github>
 	<repo.branch.uri>${repo.branch.uri.github}</repo.branch.uri>
 
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <distribution.url.gitlab>${gitlab.instance}/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</distribution.url.gitlab>
         <ph.schematron.version>5.6.4</ph.schematron.version>
         <saxon.version>10.2</saxon.version>
@@ -84,7 +92,7 @@
             </activation>
             <properties>
                 <!-- Override only if declared -->
-                <exist.db.permissions>${env.EXIST_DB_PERMISSIONS}</exist.db.permissions>
+                <exist.pkg.permissions>${env.EXIST_PKG_PERMISSIONS}</exist.pkg.permissions>
             </properties>
         </profile>
     </profiles>
@@ -321,38 +329,6 @@
                                 <catalog>${xml.catalog}</catalog>
                             </catalogs>
                             <transformationSets>
-                                <!-- adjust expath package descriptor -->
-                                <transformationSet>
-                                    <dir>resources/exist-db</dir>
-                                    <includes>
-                                        <include>expath-pkg.xml</include>
-                                    </includes>
-                                    <stylesheet>resources/exist-db/expath-pkg.xsl</stylesheet>
-                                    <parameters>
-                                        <parameter>
-                                            <name>pom-file</name>
-                                            <value>${project.basedir}/pom.xml</value>
-                                        </parameter>
-                                    </parameters>
-                                </transformationSet>
-                                <!-- adjust exist-db repo.xml -->
-                                <transformationSet>
-                                    <dir>resources/exist-db</dir>
-                                    <includes>
-                                        <include>repo.xml</include>
-                                    </includes>
-                                    <stylesheet>resources/exist-db/repo.xsl</stylesheet>
-                                    <parameters>
-                                        <parameter>
-                                            <name>permissions</name>
-                                            <value>${exist.db.permissions}</value>
-                                        </parameter>
-                                        <parameter>
-                                            <name>remove-permissions</name>
-                                            <value>true</value>
-                                        </parameter>
-                                    </parameters>
-                                </transformationSet>
                                 <!-- transform TEI documents before
 				     making a XAR package -->
                                 <transformationSet>
