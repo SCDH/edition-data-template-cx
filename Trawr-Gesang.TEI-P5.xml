@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_bare.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
-<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_bare.rng" type="application/xml"
+<?xml-model href="resources/schema/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="resources/schema/tei_all.rng" type="application/xml"
 	schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
@@ -27,8 +27,6 @@
                   <l>Ein stimm sich gund zu klagen.</l>
                   <l>Jch nam in acht <caesura/> waß die doch sagt;</l>
                   <l>That hin mit augen schlagen. </l>
-		  <l><seg><l>failing schematron</l></seg></l>
-		  <p>not allowed</p>
                </lg>
             </lg>
       </body>
