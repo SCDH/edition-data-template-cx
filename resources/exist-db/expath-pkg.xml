@@ -2,10 +2,10 @@
 <!-- Please note that the version number is set automatically from pom.xml by maven. -->
 <package
     xmlns="http://expath.org/ns/pkg"
-    name="http://scdh.wwu.de/edition-data-template-cqc"
-    abbrev="edition-data-template-cqc"
-    version="0.1"
+    name="${project.groupId}.${project.artifactId}"
+    abbrev="${project.artifactId}"
+    version="${project.version}"
     spec="1.0">
-    <title>Edition des Gesamtwerks von ...</title>
+    <title>${project.name}</title>
     <dependency package="http://exist-db.org/apps/shared"/>
 </package>
